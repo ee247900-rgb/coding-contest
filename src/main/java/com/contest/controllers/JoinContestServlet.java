@@ -31,14 +31,27 @@ public class JoinContestServlet extends HttpServlet {
             name = request.getParameter("name");
         }
 
+        // Validate that both Name AND Contest Code are supplied
+        if (name == null || name.trim().isEmpty()) {
+            request.setAttribute("errorMsg", "Mandatory step: You must enter your name to attend the contest.");
+            request.getRequestDispatcher("/user/join-contest.jsp").forward(request, response);
+            return;
+        }
+
+        if (contestCode == null || contestCode.trim().isEmpty()) {
+            request.setAttribute("errorMsg", "Mandatory step: You must enter a valid contest code to attend.");
+            request.getRequestDispatcher("/user/join-contest.jsp").forward(request, response);
+            return;
+        }
+
         java.util.Map<String, Object> contest = com.contest.data.ContestDatabase.find(contestCode);
         if (contest != null) {
             request.getSession().setAttribute("currentContestCode", contest.get("code"));
             request.getSession().setAttribute("currentContestTitle", contest.get("title"));
-            request.getSession().setAttribute("displayName", name == null || name.trim().isEmpty() ? "Guest Coder" : name.trim());
+            request.getSession().setAttribute("displayName", name.trim());
             response.sendRedirect(request.getContextPath() + "/user/contest-dashboard.jsp");
         } else {
-            request.setAttribute("errorMsg", "Contest code '" + (contestCode == null ? "" : contestCode) + "' not found. Select an active contest or try invite code SPRINT26.");
+            request.setAttribute("errorMsg", "Invalid contest code '" + contestCode + "'. Please check the code and try again.");
             request.getRequestDispatcher("/user/join-contest.jsp").forward(request, response);
         }
     }

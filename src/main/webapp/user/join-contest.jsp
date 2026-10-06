@@ -41,11 +41,11 @@ List<Map<String, Object>> activeContests = com.contest.data.ContestDatabase.all(
 .join-form .button{width:100%;margin-top:20px;border:0;cursor:pointer;height:46px;font-size:13px}
 .join-note{border-top:1px solid #e4e4dc;margin-top:24px;padding-top:18px;color:#85877f;font-size:12px;line-height:1.7}
 .join-note strong{color:#333}
-.contest-chip{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e1e1d8;border-radius:8px;padding:12px 14px;margin-top:10px;text-decoration:none;color:#222;transition:all 0.2s ease}
+.contest-chip{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e1e1d8;border-radius:8px;padding:12px 14px;margin-top:10px;text-decoration:none;color:#222;transition:all 0.2s ease;cursor:pointer}
 .contest-chip:hover{border-color:#91a64c;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .contest-chip-info strong{display:block;font-size:13px;font-weight:700}
 .contest-chip-info span{font:11px var(--mono);color:#666}
-.btn-chip-join{background:#111;color:#aee56e;font-size:11px;font-weight:700;padding:6px 12px;border-radius:5px;text-decoration:none}
+.btn-chip-join{background:#111;color:#aee56e;font-size:11px;font-weight:700;padding:6px 12px;border-radius:5px}
 .alert-error{background:#f8e8e5;color:#8e3b31;padding:12px;border-radius:6px;font-size:12px;margin-bottom:17px}
 .join-back{display:inline-block;font-size:11px;color:#74766e;margin-top:20px;text-decoration:none}
 .join-back:hover{color:#637c28}
@@ -57,48 +57,48 @@ List<Map<String, Object>> activeContests = com.contest.data.ContestDatabase.all(
     <aside class="join-visual">
         <a class="brand" href="<%=ctx%>/index.jsp"><span class="brand-mark">&lt;/&gt;</span> codearena<span class="brand-dot">.</span></a>
         <div class="join-quote">
-            <div class="eyebrow">THE NEXT MOVE IS YOURS</div>
+            <div class="eyebrow">MANDATORY CONTEST REGISTRATION</div>
             <h1>Make room<br>for a <span>breakthrough.</span></h1>
-            <p>One invite code gets you into the contest arena. Enter your details below to start competing.</p>
+            <p>To attend any contest, participants must enter their full name and a valid contest code.</p>
         </div>
         <div class="join-foot">A little friendly competition goes a long way.</div>
     </aside>
     
     <main class="join-form-wrap">
         <form class="join-form" action="<%=ctx%>/joinContest" method="post">
-            <div class="eyebrow">STEP 01 <span class="eyebrow-divider">/</span> ENTER THE ARENA</div>
-            <h2>Join a Contest</h2>
-            <p>Enter your display name and contest invite code below.</p>
+            <div class="eyebrow">REQUIRED STEP <span class="eyebrow-divider">/</span> CONTEST ATTENDANCE</div>
+            <h2>Attend a Contest</h2>
+            <p>Please enter your name and contest code to join the arena.</p>
             
             <% if (request.getAttribute("errorMsg") != null) { %>
-                <div class="alert-error"><%= request.getAttribute("errorMsg") %></div>
+                <div class="alert-error">⚠️ <%= request.getAttribute("errorMsg") %></div>
             <% } %>
             
-            <label for="displayName">YOUR DISPLAY NAME</label>
-            <input id="displayName" name="displayName" placeholder="e.g. Alex Morgan" maxlength="50" autocomplete="name" required value="Coder">
+            <label for="displayName">YOUR NAME (REQUIRED)</label>
+            <input id="displayName" name="displayName" placeholder="e.g. Alex Morgan" maxlength="50" autocomplete="name" required>
             
-            <label for="contestCode">CONTEST INVITE CODE</label>
+            <label for="contestCode">CONTEST CODE (REQUIRED)</label>
             <input class="code-input" id="contestCode" name="contestCode" required maxlength="20" placeholder="e.g. SPRINT26" value="<%=prefilledCode%>" autocomplete="off">
             
             <button type="submit" class="button button-dark">Enter Contest Arena <span>→</span></button>
             
             <div class="join-note">
-                <strong>Available Active Contests:</strong>
+                <strong>Active Contests:</strong>
                 <% for (Map<String, Object> c : activeContests) { 
                     String cCode = String.valueOf(c.get("code"));
                     String cTitle = String.valueOf(c.get("title"));
                 %>
-                    <a href="<%=ctx%>/joinContest?code=<%=cCode%>&displayName=Coder" class="contest-chip">
+                    <div onclick="selectContest('<%=cCode%>')" class="contest-chip">
                         <div class="contest-chip-info">
                             <strong><%=cTitle%></strong>
                             <span>Code: <%=cCode%></span>
                         </div>
-                        <span class="btn-chip-join">Join Contest →</span>
-                    </a>
+                        <span class="btn-chip-join">Select Code</span>
+                    </div>
                 <% } %>
             </div>
             
-            <a class="join-back" href="<%=ctx%>/user/problems.jsp">← Or Explore All Problems in Practice Mode</a>
+            <a class="join-back" href="<%=ctx%>/user/problems.jsp">← Practice Problems Without Contest Code</a>
         </form>
     </main>
 </div>
@@ -107,6 +107,11 @@ List<Map<String, Object>> activeContests = com.contest.data.ContestDatabase.all(
 document.getElementById('contestCode').addEventListener('input', function(){
     this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
 });
+
+function selectContest(code) {
+    document.getElementById('contestCode').value = code;
+    document.getElementById('displayName').focus();
+}
 </script>
 </body>
 </html>
